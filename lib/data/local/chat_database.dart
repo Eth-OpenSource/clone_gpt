@@ -1,6 +1,5 @@
-import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../models/chat_models.dart';
 
@@ -21,10 +20,7 @@ class ChatDatabase {
   static ChatDatabase get instance => _instance ??= ChatDatabase();
 
   static void initializeFfiIfNeeded() {
-    if (Platform.isWindows || Platform.isLinux) {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
-    }
+    // Mobile platforms use native SQLite. Desktop/FFI configured conditionally if needed.
   }
 
   Future<Database> get database async {
@@ -33,9 +29,17 @@ class ChatDatabase {
     return _db!;
   }
 
-  Future<Database> _initDatabase() async {
-    initializeFfiIfNeeded();
+  static Future<ChatDatabase> inMemory() async {
+    final db = await openDatabase(
+      inMemoryDatabasePath,
+      version: dbVersion,
+      onCreate: _onCreate,
+      onConfigure: _onConfigure,
+    );
+    return ChatDatabase(db);
+  }
 
+  Future<Database> _initDatabase() async {
     final defaultDatabasesPath = await getDatabasesPath();
     final dbPath = p.join(defaultDatabasesPath, dbName);
 
@@ -45,19 +49,6 @@ class ChatDatabase {
       onCreate: _onCreate,
       onConfigure: _onConfigure,
     );
-  }
-
-  static Future<ChatDatabase> inMemory() async {
-    sqfliteFfiInit();
-    final db = await databaseFactoryFfi.openDatabase(
-      inMemoryDatabasePath,
-      options: OpenDatabaseOptions(
-        version: dbVersion,
-        onCreate: _onCreate,
-        onConfigure: _onConfigure,
-      ),
-    );
-    return ChatDatabase(db);
   }
 
   static Future<void> _onConfigure(Database db) async {

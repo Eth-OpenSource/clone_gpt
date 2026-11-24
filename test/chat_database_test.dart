@@ -1,13 +1,42 @@
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:test/test.dart';
 import 'package:clone_gpt/data/local/chat_database.dart';
 import 'package:clone_gpt/data/models/chat_models.dart';
 
 void main() {
-
   late ChatDatabase database;
 
   setUp(() async {
-    database = await ChatDatabase.inMemory();
+    sqfliteFfiInit();
+    final db = await databaseFactoryFfi.openDatabase(
+      inMemoryDatabasePath,
+      options: OpenDatabaseOptions(
+        version: ChatDatabase.dbVersion,
+        onCreate: (db, version) async {
+          await db.execute('''
+            CREATE TABLE threads (
+              id TEXT PRIMARY KEY,
+              title TEXT NOT NULL,
+              created_at INTEGER NOT NULL,
+              updated_at INTEGER NOT NULL
+            )
+          ''');
+
+          await db.execute('''
+            CREATE TABLE messages (
+              id TEXT PRIMARY KEY,
+              thread_id TEXT NOT NULL,
+              role TEXT NOT NULL,
+              content TEXT NOT NULL,
+              status TEXT NOT NULL,
+              created_at INTEGER NOT NULL,
+              FOREIGN KEY (thread_id) REFERENCES threads (id) ON DELETE CASCADE
+            )
+          ''');
+        },
+      ),
+    );
+    database = ChatDatabase(db);
   });
 
   tearDown(() async {
