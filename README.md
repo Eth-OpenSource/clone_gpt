@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/Dart-3.14+-0175C2?logo=dart&logoColor=white" alt="Dart" />
 </p>
 
-A minimalist, enterprise-grade ChatGPT-style Flutter application powered by the Google Gemini API.
+A minimalist, simple ChatGPT-style Flutter application powered by the third party API key providers.
 
 
 ## License

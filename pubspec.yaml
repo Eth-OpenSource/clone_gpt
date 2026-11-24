@@ -1,5 +1,5 @@
 name: clone_gpt
-description: "cloneGPT v1 - Enterprise-grade minimalist ChatGPT-style Flutter application powered by Gemini."
+description: "cloneGPT v1 - Minimalist ChatGPT-style Flutter application powered by thrid part Api Key providers."
 publish_to: 'none'
 version: 1.0.0+1
 

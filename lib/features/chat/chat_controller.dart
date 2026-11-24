@@ -188,21 +188,37 @@ class ChatController extends ChangeNotifier {
         activeStreamNotifier.value = buffer.toString();
       }
 
-      // Completed successfully
       final finalContent = buffer.toString();
-      final completedMessage = assistantPlaceholder.copyWith(
-        content: finalContent,
-        status: MessageStatus.complete,
-      );
 
-      await _database.saveMessage(completedMessage);
+      if (_cancellationToken?.isCancelled == true) {
+        final abortedMessage = assistantPlaceholder.copyWith(
+          content: finalContent,
+          status: MessageStatus.aborted,
+        );
+        if (finalContent.isNotEmpty) {
+          await _database.saveMessage(abortedMessage);
+          _messages = [
+            ..._messages.sublist(0, _messages.length - 1),
+            abortedMessage,
+          ];
+        } else {
+          _messages = _messages.sublist(0, _messages.length - 1);
+        }
+      } else {
+        final completedMessage = assistantPlaceholder.copyWith(
+          content: finalContent,
+          status: MessageStatus.complete,
+        );
 
-      _messages = [
-        ..._messages.sublist(0, _messages.length - 1),
-        completedMessage,
-      ];
-      _errorMessage = null;
-      _lastFailedPrompt = null;
+        await _database.saveMessage(completedMessage);
+
+        _messages = [
+          ..._messages.sublist(0, _messages.length - 1),
+          completedMessage,
+        ];
+        _errorMessage = null;
+        _lastFailedPrompt = null;
+      }
     } catch (e) {
       final partialContent = buffer.toString();
       if (_cancellationToken?.isCancelled == true) {

@@ -112,6 +112,7 @@ class AppTheme {
     const c = AppCustomColors.light;
     return ThemeData(
       useMaterial3: true,
+      splashFactory: InkRipple.splashFactory,
       brightness: Brightness.light,
       scaffoldBackgroundColor: c.background,
       canvasColor: c.background,
@@ -161,6 +162,7 @@ class AppTheme {
     const c = AppCustomColors.dark;
     return ThemeData(
       useMaterial3: true,
+      splashFactory: InkRipple.splashFactory,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: c.background,
       canvasColor: c.background,

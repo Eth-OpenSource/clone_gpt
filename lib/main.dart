@@ -31,7 +31,22 @@ class CloneGptApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
+      scrollBehavior: const CloneGptScrollBehavior(),
       home: ChatScreen(controller: controller),
     );
+  }
+}
+
+/// Custom scroll behavior preventing framework stretch shader decodes.
+class CloneGptScrollBehavior extends MaterialScrollBehavior {
+  const CloneGptScrollBehavior();
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child;
   }
 }

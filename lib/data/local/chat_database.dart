@@ -142,11 +142,18 @@ class ChatDatabase {
 
   Future<void> deleteThread(String threadId) async {
     final db = await database;
-    await db.delete(
-      'threads',
-      where: 'id = ?',
-      whereArgs: [threadId],
-    );
+    await db.transaction((txn) async {
+      await txn.delete(
+        'messages',
+        where: 'thread_id = ?',
+        whereArgs: [threadId],
+      );
+      await txn.delete(
+        'threads',
+        where: 'id = ?',
+        whereArgs: [threadId],
+      );
+    });
   }
 
   // --- Message Operations ---

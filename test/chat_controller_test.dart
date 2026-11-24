@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:clone_gpt/data/local/chat_database.dart';
 import 'package:clone_gpt/data/models/chat_models.dart';
 import 'package:clone_gpt/data/remote/gemini_service.dart';
@@ -33,6 +34,11 @@ class MockCompletionService implements ChatCompletionService {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  });
 
   late ChatDatabase database;
 
